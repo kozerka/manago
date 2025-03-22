@@ -1,0 +1,31 @@
+<div class="relative mb-12">
+  <div class="absolute inset-x-0 bottom-0 h-1/2 bg-gray-100"></div>
+  <div class="max-w-7xl mx-auto">
+    <div class="relative sm:rounded-2xl sm:overflow-hidden">
+      <div class="absolute inset-0">
+        <div class="absolute inset-0 bg-gradient-to-r from-blue-600 to-gray-800 mix-blend-multiply"></div>
+      </div>
+      <div class="relative px-4 py-20 sm:px-6 sm:py-28 lg:py-36 lg:px-8">
+        <h1 class="text-center text-4xl font-extrabold tracking-tight sm:text-5xl lg:text-6xl">
+          <span class="block text-white">Manago</span>
+          <span class="block text-blue-200">Project Management Tool</span>
+        </h1>
+        <p class="mt-8 max-w-lg mx-auto text-center text-xl text-blue-200 sm:max-w-3xl">
+          Effortlessly organize your projects, track tasks, and collaborate with your team.
+        </p>
+        <div class="mt-12 max-w-sm mx-auto sm:max-w-none sm:flex sm:justify-center">
+          <% if user_signed_in? %>
+            <div class="space-y-4 sm:space-y-0 sm:mx-auto sm:inline-grid sm:grid-cols-1 sm:gap-5">
+              <%= link_to "View Projects", projects_path, class: "flex items-center justify-center px-4 py-3 border border-transparent text-base font-medium rounded-md text-blue-700 bg-white hover:bg-blue-50 sm:px-8" %>
+            </div>
+          <% else %>
+            <div class="space-y-4 sm:space-y-0 sm:mx-auto sm:inline-grid sm:grid-cols-2 sm:gap-5">
+              <%= link_to "Sign in", new_user_session_path, class: "flex items-center justify-center px-4 py-3 border border-transparent text-base font-medium rounded-md text-blue-700 bg-white hover:bg-blue-50 sm:px-8" %>
+              <%= link_to "Sign up", new_user_registration_path, class: "flex items-center justify-center px-4 py-3 border border-transparent text-base font-medium rounded-md text-white bg-blue-500 hover:bg-blue-600 sm:px-8" %>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

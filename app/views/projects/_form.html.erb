@@ -1,0 +1,71 @@
+<div class="bg-white rounded-lg shadow-sm border border-gray-200">
+  <%= simple_form_for(project) do |f| %>
+    <%= f.error_notification class: "p-4 mb-4 text-sm text-red-800 rounded-lg bg-red-50" %>
+    <%= f.error_notification message: f.object.errors[:base].to_sentence, class: "p-4 mb-4 text-sm text-red-800 rounded-lg bg-red-50" if f.object.errors[:base].present? %>
+
+    <div class="p-6 space-y-6">
+      <!-- Title Field -->
+      <div class="form-group">
+        <%= f.label :title, class: "block mb-2 text-sm font-medium text-gray-900" %>
+        <%= f.input :title,
+                    label: false,
+                    placeholder: "Enter project title...",
+                    input_html: {
+                      class: "shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 px-4"
+                    } %>
+      </div>
+
+      <!-- Description Field -->
+      <div class="form-group">
+        <%= f.label :description, class: "block mb-2 text-sm font-medium text-gray-900" %>
+        <%= f.input :description,
+                    as: :text,
+                    label: false,
+                    placeholder: "Enter project description...",
+                    input_html: {
+                      rows: 4,
+                      class: "block p-2.5 px-4 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500"
+                    } %>
+      </div>
+
+      <!-- Date Fields -->
+      <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
+        <div class="form-group">
+          <%= f.label :start_date, class: "block mb-2 text-sm font-medium text-gray-900" %>
+          <div class="grid grid-cols-3 gap-2">
+            <%= f.date_select :start_date,
+                        { order: [:day, :month, :year], use_month_names: Date::MONTHNAMES.compact },
+                        { class: "bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 px-4" } %>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <%= f.label :end_date, class: "block mb-2 text-sm font-medium text-gray-900" %>
+          <div class="grid grid-cols-3 gap-2">
+            <%= f.date_select :end_date,
+                       { order: [:day, :month, :year], use_month_names: Date::MONTHNAMES.compact, include_blank: true },
+                       { class: "bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 px-4" } %>
+          </div>
+        </div>
+      </div>
+
+      <!-- Status Field -->
+      <div class="form-group">
+        <%= f.label :status, class: "block mb-2 text-sm font-medium text-gray-900" %>
+        <%= f.input :status,
+                   collection: Project.statuses.keys.map { |status| [status.humanize, status] },
+                   include_blank: false,
+                   label: false,
+                   input_html: {
+                     class: "bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 px-4"
+                   } %>
+      </div>
+    </div>
+
+    <!-- Form Actions -->
+    <div class="px-6 py-4 bg-gray-50 border-t border-gray-200 flex justify-end space-x-3 rounded-b-lg">
+      <%= link_to "Cancel", project.persisted? ? project_path(project) : projects_path, class: "text-gray-900 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 font-medium rounded-lg text-sm px-5 py-2.5" %>
+      <%= f.button :submit, class: "text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5" %>
+    </div>
+  <% end %>
+</div>

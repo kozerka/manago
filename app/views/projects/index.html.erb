@@ -1,0 +1,298 @@
+<div class="space-y-12">
+  <div class="bg-white bg-opacity-70 backdrop-blur-sm rounded-lg overflow-hidden">
+    <div class="px-8 py-6 flex flex-wrap justify-between items-center">
+      <div>
+        <h1 class="text-2xl font-bold text-gray-900">Projects</h1>
+        <p class="mt-2 max-w-2xl text-sm text-gray-500">Manage all your projects</p>
+      </div>
+      <%= link_to new_project_path, class: "inline-flex items-center px-5 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500" do %>
+        <svg class="-ml-1 mr-2 h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+        </svg>
+        New Project
+      <% end %>
+    </div>
+  </div>
+
+  <!-- Project Statistics and Charts -->
+  <div class="bg-white bg-opacity-70 backdrop-blur-sm rounded-lg overflow-hidden">
+    <div class="px-8 py-6 border-b border-gray-200">
+      <h2 class="text-lg font-semibold text-gray-900">Project Overview</h2>
+      <p class="mt-1 text-sm text-gray-500">Track your project progress and statistics</p>
+    </div>
+
+    <div class="p-6">
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <!-- Project Status Chart -->
+        <div class="bg-white rounded-lg border border-gray-200 shadow-sm p-4">
+          <h3 class="text-sm font-medium text-gray-700 mb-4">Projects by Status</h3>
+          <div class="h-64" data-controller="chart"
+              data-chart-type-value="doughnut"
+              data-chart-data-value="<%= {
+                labels: ['Draft', 'In Progress', 'Completed', 'Archived'],
+                datasets: [{
+                  data: [
+                    @projects.select { |p| p.status == 'draft' }.count,
+                    @projects.select { |p| p.status == 'in_progress' }.count,
+                    @projects.select { |p| p.status == 'completed' }.count,
+                    @archived_projects.count
+                  ],
+                  backgroundColor: ['#94a3b8', '#3b82f6', '#10b981', '#8b5cf6']
+                }]
+              }.to_json %>">
+            <canvas data-chart-target="canvas"></canvas>
+          </div>
+        </div>
+
+        <!-- Task Status Chart -->
+        <div class="bg-white rounded-lg border border-gray-200 shadow-sm p-4">
+          <h3 class="text-sm font-medium text-gray-700 mb-4">Tasks by Status</h3>
+          <div class="h-64" data-controller="chart"
+              data-chart-type-value="bar"
+              data-chart-data-value="<%= {
+                labels: ['Pending', 'In Progress', 'Completed', 'Cancelled'],
+                datasets: [{
+                  label: 'Tasks',
+                  data: [
+                    Task.where(project_id: @projects.pluck(:id)).pending.count,
+                    Task.where(project_id: @projects.pluck(:id)).in_progress.count,
+                    Task.where(project_id: @projects.pluck(:id)).completed.count,
+                    Task.where(project_id: @projects.pluck(:id)).cancelled.count
+                  ],
+                  backgroundColor: ['#94a3b8', '#3b82f6', '#10b981', '#ef4444']
+                }]
+              }.to_json %>">
+            <canvas data-chart-target="canvas"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <!-- Project Progress Cards -->
+      <div class="mt-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <%
+          active_projects_count = @projects.count
+          completed_tasks_count = Task.where(project_id: @projects.pluck(:id), status: :completed).count
+          total_tasks_count = Task.where(project_id: @projects.pluck(:id)).count
+          overall_completion = total_tasks_count > 0 ? (completed_tasks_count.to_f / total_tasks_count * 100).round : 0
+
+          in_progress_projects = @projects.select { |p| p.status == 'in_progress' }
+          avg_progress = in_progress_projects.any? ? in_progress_projects.sum(&:time_progress_percentage) / in_progress_projects.count : 0
+        %>
+
+        <!-- Active Projects Card -->
+        <div class="bg-white rounded-lg border border-gray-200 shadow-sm p-4">
+          <div class="flex items-center">
+            <div class="p-3 rounded-full bg-blue-100 text-blue-600">
+              <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+              </svg>
+            </div>
+            <div class="ml-4">
+              <h3 class="text-lg font-semibold text-gray-900"><%= active_projects_count %></h3>
+              <p class="text-sm text-gray-500">Active Projects</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Completed Tasks Card -->
+        <div class="bg-white rounded-lg border border-gray-200 shadow-sm p-4">
+          <div class="flex items-center">
+            <div class="p-3 rounded-full bg-green-100 text-green-600">
+              <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+              </svg>
+            </div>
+            <div class="ml-4">
+              <h3 class="text-lg font-semibold text-gray-900"><%= completed_tasks_count %>/<%= total_tasks_count %></h3>
+              <p class="text-sm text-gray-500">Completed Tasks</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Overall Completion Card -->
+        <div class="bg-white rounded-lg border border-gray-200 shadow-sm p-4">
+          <div class="flex items-center">
+            <div class="p-3 rounded-full bg-purple-100 text-purple-600">
+              <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 8v8m-4-5v5m-4-2v2m-2 4h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+              </svg>
+            </div>
+            <div class="ml-4">
+              <h3 class="text-lg font-semibold text-gray-900"><%= overall_completion %>%</h3>
+              <p class="text-sm text-gray-500">Overall Completion</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Average Progress Card -->
+        <div class="bg-white rounded-lg border border-gray-200 shadow-sm p-4">
+          <div class="flex items-center">
+            <div class="p-3 rounded-full bg-yellow-100 text-yellow-600">
+              <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+              </svg>
+            </div>
+            <div class="ml-4">
+              <h3 class="text-lg font-semibold text-gray-900"><%= avg_progress %>%</h3>
+              <p class="text-sm text-gray-500">Avg. Project Progress</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div x-data="{ tab: 'all' }" class="bg-white bg-opacity-70 backdrop-blur-sm rounded-lg overflow-hidden">
+    <div class="border-b border-gray-200">
+      <ul class="flex flex-wrap -mb-px text-sm font-medium text-center text-gray-500">
+        <li class="mr-4">
+          <button @click="tab = 'all'" :class="tab === 'all' ? 'text-blue-600 border-blue-600' : 'border-transparent hover:text-gray-600 hover:border-gray-300'" class="inline-flex items-center p-4 border-b-2 rounded-t-lg transition-colors duration-200">All Projects</button>
+        </li>
+        <li class="mr-4">
+          <button @click="tab = 'draft'" :class="tab === 'draft' ? 'text-blue-600 border-blue-600' : 'border-transparent hover:text-gray-600 hover:border-gray-300'" class="inline-flex items-center p-4 border-b-2 rounded-t-lg transition-colors duration-200">Drafts</button>
+        </li>
+        <li class="mr-4">
+          <button @click="tab = 'in_progress'" :class="tab === 'in_progress' ? 'text-blue-600 border-blue-600' : 'border-transparent hover:text-gray-600 hover:border-gray-300'" class="inline-flex items-center p-4 border-b-2 rounded-t-lg transition-colors duration-200">In Progress</button>
+        </li>
+        <li class="mr-4">
+          <button @click="tab = 'completed'" :class="tab === 'completed' ? 'text-blue-600 border-blue-600' : 'border-transparent hover:text-gray-600 hover:border-gray-300'" class="inline-flex items-center p-4 border-b-2 rounded-t-lg transition-colors duration-200">Completed</button>
+        </li>
+        <% if @archived_projects.any? %>
+          <li class="mr-4">
+            <button @click="tab = 'archived'" :class="tab === 'archived' ? 'text-blue-600 border-blue-600' : 'border-transparent hover:text-gray-600 hover:border-gray-300'" class="inline-flex items-center p-4 border-b-2 rounded-t-lg transition-colors duration-200">
+              <svg class="w-4 h-4 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4" />
+              </svg>
+              Archive
+            </button>
+          </li>
+        <% end %>
+      </ul>
+    </div>
+
+    <div class="p-6">
+      <% if @projects.any? || @archived_projects.any? %>
+        <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          <% @projects.each do |project| %>
+            <div x-show="tab === 'all' || tab === '<%= project.status %>'" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 transform scale-90" x-transition:enter-end="opacity-100 transform scale-100" class="bg-white bg-opacity-70 backdrop-blur-sm border border-gray-200 rounded-lg transition-all duration-200 hover:shadow-sm">
+              <div class="p-5">
+                <div class="flex justify-between items-start mb-4">
+                  <div>
+                    <h3 class="text-lf font-bold text-gray-700 mb-1 truncate uppercase"><%= project.title %></h3>
+                    <div class="flex items-center">
+                      <span class="<%= project.status == 'completed' ? 'bg-green-100 text-green-800' : (project.status == 'in_progress' ? 'bg-blue-100 text-blue-800' : 'bg-gray-100 text-gray-800') %> inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium mr-2">
+                        <%= project.status.humanize %>
+                      </span>
+                      <span class="text-xs text-gray-500"><%= project.tasks.count %> tasks</span>
+                    </div>
+                  </div>
+                  <div class="flex-shrink-0">
+                    <span class="text-xs text-gray-500 whitespace-nowrap"><%= project.start_date.strftime("%b %d") %> - <%= project.end_date&.strftime("%b %d") || "Ongoing" %></span>
+                  </div>
+                </div>
+                <% if project.start_date.present? && project.end_date.present? %>
+                  <%
+                    total_days = (project.end_date - project.start_date).to_i
+                    days_passed = [(Date.today - project.start_date).to_i, 0].max
+                    progress_percentage = [[(days_passed.to_f / total_days) * 100, 0].max, 100].min.round
+                    progress_color = progress_percentage >= 100 ? "bg-green-500" : progress_percentage >= 75 ? "bg-yellow-500" : "bg-blue-500"
+                  %>
+                  <div class="mt-4">
+                    <div class="flex items-center space-x-2">
+                      <span class="text-xs text-gray-500 w-14">Progress:</span>
+                      <div class="relative w-full bg-gray-200 rounded-full h-2.5">
+                        <div class="<%= progress_color %> h-2.5 rounded-full" style="width: <%= progress_percentage %>%"></div>
+                      </div>
+                      <span class="text-xs font-medium text-gray-500"><%= progress_percentage %>%</span>
+                    </div>
+                  </div>
+                <% end %>
+                <div class="mt-4">
+                  <p class="text-xs font-medium text-gray-700">Description:</p>
+                  <p class="mt-1 text-xs mb-4 text-gray-500"><%= project.description %></p>
+                </div>
+                <div class="flex justify-end space-x-2 pt-3 border-t border-gray-100">
+                  <%= link_to edit_project_path(project), class: "inline-flex items-center px-2 py-1 border border-blue-600 text-xs font-medium rounded-md text-blue-600 hover:bg-blue-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500" do %>
+                    <svg class="mr-2 h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                    </svg>
+                    Edit
+                  <% end %>
+                  <%= link_to project_path(project), class: "inline-flex items-center px-2 py-1 border border-gray-700 text-xs font-medium rounded-md text-gray-700 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-700" do %>
+                    <svg class="mr-2 h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.477 0 8.268 2.943 9.542 7-1.274 4.057-5.065 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                    </svg>
+                    View
+                  <% end %>
+                </div>
+              </div>
+            </div>
+          <% end %>
+
+          <% @archived_projects.each do |project| %>
+            <div x-show="tab === 'archived'" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 transform scale-90" x-transition:enter-end="opacity-100 transform scale-100" class="bg-white bg-opacity-70 backdrop-blur-sm border border-gray-200 rounded-lg transition-all duration-200 hover:shadow-sm">
+              <div class="p-5">
+                <div class="flex justify-between items-start mb-4">
+                  <div>
+                    <h3 class="text-xl font-bold text-gray-900 mb-1 truncate uppercase"><%= project.title %></h3>
+                    <div class="flex items-center">
+                      <span class="bg-purple-100 text-purple-800 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium mr-2"><%= project.status.humanize %></span>
+                      <span class="text-xs text-gray-500"><%= project.tasks.count %> tasks</span>
+                    </div>
+                  </div>
+                  <div class="flex-shrink-0">
+                    <span class="text-xs text-gray-500 whitespace-nowrap"><%= project.start_date.strftime("%b %d") %> - <%= project.end_date&.strftime("%b %d") || "Ongoing" %></span>
+                  </div>
+                </div>
+                <% if project.start_date.present? && project.end_date.present? %>
+                  <%
+                    total_days = (project.end_date - project.start_date).to_i
+                    completed_days = [(project.end_date - project.start_date).to_i, 0].max
+                    progress_percentage = 100
+                  %>
+                  <div class="mb-4">
+                    <div class="flex justify-between mb-1">
+                      <span class="text-xs font-medium text-gray-700">Project duration</span>
+                      <span class="text-xs font-medium text-gray-700"><%= completed_days %> days</span>
+                    </div>
+                    <div class="w-full bg-gray-200 rounded-full h-2">
+                      <div class="bg-purple-600 h-2 rounded-full" style="width: 100%"></div>
+                    </div>
+                  </div>
+                <% end %>
+                <div class="mt-4">
+                  <p class="text-sm font-medium text-gray-700">Description:</p>
+                  <p class="mt-1 text-sm text-gray-500"><%= project.description %></p>
+                </div>
+                <div class="flex justify-end space-x-2 pt-3 border-t border-gray-100">
+                  <%= link_to project_path(project), class: "inline-flex items-center px-2 py-1 border border-purple-600 text-xs font-medium rounded-md text-purple-600 hover:bg-purple-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500" do %>
+                    View Archive
+                  <% end %>
+                </div>
+              </div>
+            </div>
+          <% end %>
+        </div>
+      <% else %>
+        <div class="text-center py-12">
+          <div class="mx-auto h-24 w-24 mb-4 text-gray-300">
+            <svg class="h-full w-full" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+            </svg>
+          </div>
+          <h3 class="text-lg font-medium text-gray-900">No projects yet</h3>
+          <p class="mt-2 text-sm text-gray-500 max-w-sm mx-auto">Get started by creating your first project to organize your work.</p>
+          <div class="mt-6">
+            <%= link_to new_project_path, class: "inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500" do %>
+              <svg class="-ml-1 mr-2 h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+              </svg>
+              Create a project
+            <% end %>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>

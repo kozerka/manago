@@ -1,0 +1,94 @@
+<div class="mt-12 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+  <h2 class="text-2xl font-semibold text-gray-800 mb-8">Your Dashboard</h2>
+
+  <div class="grid grid-cols-1 gap-8 lg:grid-cols-2">
+    <div class="bg-white overflow-hidden rounded-lg border border-gray-200">
+      <div class="p-6 border-b border-gray-200 flex justify-between items-center">
+        <h3 class="text-lg font-medium text-gray-800">Recent Projects</h3>
+        <%= link_to "View all", projects_path, class: "text-sm text-blue-600 hover:text-blue-800" %>
+      </div>
+      <div class="p-6">
+        <% if @projects.present? %>
+          <div class="flow-root">
+            <ul role="list" class="-my-4 divide-y divide-gray-200">
+              <% @projects.each do |project| %>
+                <li class="py-4">
+                  <div class="flex items-center space-x-4">
+                    <div class="flex-1 min-w-0">
+                      <p class="text-sm font-medium text-gray-800 truncate"><%= project.title %></p>
+                      <p class="text-sm text-gray-500 truncate">
+                        <span class="<%= project.status == 'completed' ? 'text-green-600' : (project.status == 'in_progress' ? 'text-blue-600' : 'text-gray-500') %>">
+                          <%= project.status.humanize %>
+                        </span>
+                        • Due <%= project.end_date&.strftime("%b %d, %Y") || "No end date" %>
+                      </p>
+                    </div>
+                    <div>
+                      <%= link_to "View", project_path(project), class: "inline-flex items-center px-2.5 py-0.5 border border-gray-300 text-sm font-medium rounded-full text-gray-700 bg-white hover:bg-gray-50" %>
+                    </div>
+                  </div>
+                </li>
+              <% end %>
+            </ul>
+          </div>
+        <% else %>
+          <div class="text-center py-6">
+            <p class="text-gray-500">No projects yet.</p>
+            <%= link_to "Create your first project", new_project_path, class: "mt-4 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-500 hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500" %>
+          </div>
+        <% end %>
+      </div>
+    </div>
+
+    <div class="bg-white overflow-hidden rounded-lg border border-gray-200">
+      <div class="p-6 border-b border-gray-200">
+        <h3 class="text-lg font-medium text-gray-800">Upcoming Tasks</h3>
+      </div>
+      <div class="p-6">
+        <% if @tasks.present? %>
+          <div class="flow-root">
+            <ul role="list" class="-my-4 divide-y divide-gray-200">
+              <% @tasks.each do |task| %>
+                <li class="py-4">
+                  <div class="flex items-center space-x-4">
+                    <div class="flex-shrink-0">
+                      <% case task.priority %>
+                      <% when 'urgent' %>
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-50 text-red-600">Urgent</span>
+                      <% when 'high' %>
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-orange-50 text-orange-600">High</span>
+                      <% when 'medium' %>
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-50 text-yellow-600">Medium</span>
+                      <% else %>
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-50 text-green-600">Low</span>
+                      <% end %>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                      <p class="text-sm font-medium text-gray-800 truncate"><%= task.title %></p>
+                      <p class="text-sm text-gray-500 truncate">
+                        <span class="<%= task.status == 'completed' ? 'text-green-600' : (task.status == 'in_progress' ? 'text-blue-600' : 'text-gray-500') %>">
+                          <%= task.status.humanize %>
+                        </span>
+                        • Due
+                        <span class="<%= task.overdue? ? 'text-red-600 font-medium' : '' %>">
+                          <%= task.due_date.strftime("%b %d, %Y") %>
+                        </span>
+                      </p>
+                    </div>
+                    <div>
+                      <%= link_to "View", project_task_path(task.project, task), class: "inline-flex items-center px-2.5 py-0.5 border border-gray-300 text-sm font-medium rounded-full text-gray-700 bg-white hover:bg-gray-50" %>
+                    </div>
+                  </div>
+                </li>
+              <% end %>
+            </ul>
+          </div>
+        <% else %>
+          <div class="text-center py-6">
+            <p class="text-gray-500">No upcoming tasks.</p>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>

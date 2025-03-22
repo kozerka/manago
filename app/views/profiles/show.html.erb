@@ -1,0 +1,223 @@
+<div class="space-y-8">
+  <!-- Profile Header -->
+  <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+    <div class="p-6 sm:p-8">
+      <div class="flex flex-col sm:flex-row sm:items-center">
+        <div class="mb-4 sm:mb-0 sm:mr-6">
+          <div class="w-24 h-24 bg-blue-100 rounded-full flex items-center justify-center text-blue-700 text-3xl font-bold border-4 border-white shadow">
+            <%= @user.first_name[0].upcase %><%= @user.last_name[0].upcase %>
+          </div>
+        </div>
+        <div>
+          <h1 class="text-2xl font-bold text-gray-900 mb-1"><%= @user.full_name %></h1>
+          <p class="text-gray-600 mb-3 flex items-center">
+            <svg class="w-5 h-5 mr-1 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+            </svg>
+            <%= @user.email %>
+          </p>
+          <div class="flex items-center gap-2">
+            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium <%= @user.role && @user.role == 'admin' ? 'bg-purple-100 text-purple-800' : 'bg-blue-100 text-blue-800' %>">
+              <%= @user.role ? @user.role.humanize : 'User' %>
+            </span>
+            <span class="text-sm text-gray-500">Member since <%= @user.created_at.strftime("%B %Y") %></span>
+          </div>
+        </div>
+        <div class="mt-4 sm:mt-0 sm:ml-auto">
+          <%= link_to edit_profile_path, class: "inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500" do %>
+            <svg class="-ml-1 mr-2 h-5 w-5 text-gray-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+            </svg>
+            Edit Profile
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Stats Cards -->
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+    <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+      <div class="p-6">
+        <div class="flex items-center">
+          <div class="flex-shrink-0 bg-blue-100 rounded-md p-3">
+            <svg class="h-8 w-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path>
+            </svg>
+          </div>
+          <div class="ml-5">
+            <h3 class="text-lg font-medium text-gray-900 mb-1">
+              Projects
+            </h3>
+            <div class="flex items-baseline">
+              <p class="text-3xl font-semibold text-gray-900">
+                <%= @projects_count %>
+              </p>
+              <p class="ml-2 text-sm text-gray-600">total</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+      <div class="p-6">
+        <div class="flex items-center">
+          <div class="flex-shrink-0 bg-green-100 rounded-md p-3">
+            <svg class="h-8 w-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path>
+            </svg>
+          </div>
+          <div class="ml-5">
+            <h3 class="text-lg font-medium text-gray-900 mb-1">
+              Tasks
+            </h3>
+            <div class="flex items-baseline">
+              <p class="text-3xl font-semibold text-gray-900">
+                <%= @tasks_count %>
+              </p>
+              <p class="ml-2 text-sm text-gray-600">total</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+      <div class="p-6">
+        <div class="flex items-center">
+          <div class="flex-shrink-0 bg-emerald-100 rounded-md p-3">
+            <svg class="h-8 w-8 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+            </svg>
+          </div>
+          <div class="ml-5">
+            <h3 class="text-lg font-medium text-gray-900 mb-1">
+              Completed
+            </h3>
+            <div class="flex items-baseline">
+              <p class="text-3xl font-semibold text-gray-900">
+                <%= @completed_tasks_count %>
+              </p>
+              <p class="ml-2 text-sm text-gray-600">tasks</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Recent Activity -->
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+    <!-- Recent Projects -->
+    <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+      <div class="px-4 py-5 border-b border-gray-200 sm:px-6">
+        <div class="flex items-center justify-between">
+          <h3 class="text-lg font-medium text-gray-900">Recent Projects</h3>
+          <%= link_to projects_path, class: "text-sm font-medium text-blue-600 hover:text-blue-800" do %>
+            View all
+          <% end %>
+        </div>
+      </div>
+      <div class="px-4 py-5 sm:p-6">
+        <% if @recent_projects.any? %>
+          <div class="space-y-4">
+            <% @recent_projects.each do |project| %>
+              <div class="border border-gray-200 rounded-lg p-4 hover:bg-gray-50">
+                <div class="flex items-center justify-between">
+                  <h4 class="text-base font-medium text-gray-900">
+                    <%= link_to project.title, project_path(project), class: "hover:text-blue-600" %>
+                  </h4>
+                  <span class="<%= project.status == 'completed' ? 'bg-green-100 text-green-800' : (project.status == 'in_progress' ? 'bg-blue-100 text-blue-800' : 'bg-gray-100 text-gray-800') %> inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium">
+                    <%= project.status.humanize %>
+                  </span>
+                </div>
+                <p class="mt-1 text-sm text-gray-600 truncate"><%= project.description %></p>
+                <div class="mt-2 flex items-center text-xs text-gray-500">
+                  <svg class="w-4 h-4 mr-1 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                  </svg>
+                  Created <%= time_ago_in_words(project.created_at) %> ago
+                </div>
+              </div>
+            <% end %>
+          </div>
+        <% else %>
+          <div class="text-center py-6">
+            <div class="mx-auto h-12 w-12 text-gray-300">
+              <svg class="h-full w-full" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+              </svg>
+            </div>
+            <p class="mt-2 text-sm text-gray-500">No projects yet.</p>
+          </div>
+        <% end %>
+      </div>
+    </div>
+
+    <!-- Recent Tasks -->
+    <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+      <div class="px-4 py-5 border-b border-gray-200 sm:px-6">
+        <div class="flex items-center justify-between">
+          <h3 class="text-lg font-medium text-gray-900">Recent Tasks</h3>
+        </div>
+      </div>
+      <div class="px-4 py-5 sm:p-6">
+        <% if @recent_tasks.any? %>
+          <div class="space-y-3">
+            <% @recent_tasks.each do |task| %>
+              <div class="flex items-center border border-gray-200 rounded-lg p-3 hover:bg-gray-50">
+                <div class="mr-3 flex-shrink-0">
+                  <% if task.completed? %>
+                    <span class="h-8 w-8 rounded-full bg-green-100 flex items-center justify-center">
+                      <svg class="h-5 w-5 text-green-600" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                      </svg>
+                    </span>
+                  <% else %>
+                    <span class="h-8 w-8 rounded-full bg-blue-100 flex items-center justify-center">
+                      <svg class="h-5 w-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                      </svg>
+                    </span>
+                  <% end %>
+                </div>
+                <div class="min-w-0 flex-1">
+                  <div class="flex items-center justify-between">
+                    <p class="text-sm font-medium text-gray-900 <%= task.completed? ? 'line-through' : '' %>">
+                      <%= link_to task.title, project_task_path(task.project, task), class: "hover:text-blue-600" %>
+                    </p>
+                    <% case task.priority %>
+                    <% when 'urgent' %>
+                      <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">Urgent</span>
+                    <% when 'high' %>
+                      <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-orange-100 text-orange-800">High</span>
+                    <% when 'medium' %>
+                      <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">Medium</span>
+                    <% else %>
+                      <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">Low</span>
+                    <% end %>
+                  </div>
+                  <div class="mt-1 flex items-center text-xs text-gray-500">
+                    <span>In <%= link_to task.project.title, project_path(task.project), class: "text-blue-600 hover:text-blue-800" %></span>
+                    <span class="mx-1">&middot;</span>
+                    <span><%= task.due_date.strftime("%b %d, %Y") %></span>
+                  </div>
+                </div>
+              </div>
+            <% end %>
+          </div>
+        <% else %>
+          <div class="text-center py-6">
+            <div class="mx-auto h-12 w-12 text-gray-300">
+              <svg class="h-full w-full" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path>
+              </svg>
+            </div>
+            <p class="mt-2 text-sm text-gray-500">No tasks yet.</p>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>
