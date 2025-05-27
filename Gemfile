@@ -67,7 +67,7 @@ end
 gem "devise", "~> 4.9"
 gem "pundit", "~> 2.5"
 gem "simple_form", "~> 5.3"
-gem "noticed", "~> 2.6"
+gem "noticed", "~> 2.7"
 gem "view_component", "~> 3.23"
 
 gem "chartkick", "~> 5.1"
